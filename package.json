@@ -7,7 +7,7 @@
     "doc": "doc"
   },
   "scripts": {
-    "test": "TS_NODE_PROJECT=tsconfig.test.json mocha --require ts-node/register tests/**/*.spec.ts"
+    "test": "TS_NODE_PROJECT=tsconfig.test.json mocha --require ts-node/register tests/**/*.ts"
   },
   "author": "",
   "license": "ISC",
