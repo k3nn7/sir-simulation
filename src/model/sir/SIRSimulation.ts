@@ -7,22 +7,18 @@ export enum State {
 }
 
 export class Cell {
-  private readonly _x: number;
-  private readonly _y: number;
+  public readonly x: number;
+  public readonly y: number;
   private state: State;
 
   constructor(x: number, y: number, state: State) {
-    this._x = x;
-    this._y = y;
+    this.x = x;
+    this.y = y;
     this.state = state;
   }
 
   infect() {
     this.state = State.Infected;
-  }
-
-  remove() {
-    this.state = State.Removed;
   }
 
   isInfected(): boolean {
@@ -35,15 +31,6 @@ export class Cell {
 
   isRemoved(): boolean {
     return this.state == State.Removed;
-  }
-
-
-  get x(): number {
-    return this._x;
-  }
-
-  get y(): number {
-    return this._y;
   }
 }
 
@@ -74,15 +61,36 @@ export class SIRSimulation {
   }
 
   susceptibleCellsCount(): number {
-    return 8;
+    let result = 0;
+    for (let i = 0; i < this.width; i++) {
+      for (let j = 0; j < this.height; j++) {
+        if (this.cells[i][j].isSusceptible()) result++;
+      }
+    }
+
+    return result;
   }
 
   infectedCellsCount(): number {
-    return 1;
+    let result = 0;
+    for (let i = 0; i < this.width; i++) {
+      for (let j = 0; j < this.height; j++) {
+        if (this.cells[i][j].isInfected()) result++;
+      }
+    }
+
+    return result;
   }
 
   removedCellsCount(): number {
-    return 0;
+    let result = 0;
+    for (let i = 0; i < this.width; i++) {
+      for (let j = 0; j < this.height; j++) {
+        if (this.cells[i][j].isRemoved()) result++;
+      }
+    }
+
+    return result;
   }
 
   lastEvents(): Array<CellStateChanged> {
@@ -93,10 +101,10 @@ export class SIRSimulation {
     this.eventsFromLastEpoch = new Array<CellStateChanged>();
 
     const newState = new Array<Array<Cell>>();
-    for(let i = 0; i < this.width; i++) {
+    for (let i = 0; i < this.width; i++) {
       newState[i] = new Array<Cell>();
       for (let j = 0; j < this.height; j++) {
-        newState[i][j] =  this.cells[i][j];
+        newState[i][j] = this.cells[i][j];
       }
     }
 
