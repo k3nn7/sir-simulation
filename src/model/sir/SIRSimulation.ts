@@ -121,22 +121,22 @@ export class SIRSimulation {
               State.Removed
             ));
           } else {
-            this.getCellNeighbours(i, j).forEach((cell: Cell) => {
-              if (cell.isSusceptible() && (newState[cell.x][cell.y].isSusceptible())) {
-                newState[cell.x][cell.y] = new Cell(
-                  cell.x,
-                  cell.y,
-                  State.Infected
-                );
+            const neighbours = this.getCellNeighbours(i, j);
+            const n = neighbours[Math.floor(Math.random() * neighbours.length)];
+            if (n.isSusceptible() && newState[n.x][n.y].isSusceptible()) {
+              newState[n.x][n.y] = new Cell(
+                n.x,
+                n.y,
+                State.Infected
+              );
 
-                this.lastEvents().push(new CellStateChanged(
-                  cell.x,
-                  cell.y,
-                  State.Susceptible,
-                  State.Infected
-                ));
-              }
-            });
+              this.lastEvents().push(new CellStateChanged(
+                n.x,
+                n.y,
+                State.Susceptible,
+                State.Infected
+              ));
+            }
           }
         }
       }
