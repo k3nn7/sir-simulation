@@ -1,8 +1,10 @@
 import {Simulation} from "../view/Simulation";
 import {SIRSimulation, State} from "../model/sir/SIRSimulation";
+import {Graph, Point} from "../view/Graph";
 
 export class SimulationController {
   private view: Simulation;
+  private graph: Graph;
   private horizontalCellsInput: HTMLInputElement;
   private verticalCellsInput: HTMLInputElement;
   private infectedCellsInput: HTMLInputElement;
@@ -10,6 +12,7 @@ export class SimulationController {
 
   constructor(
     view: Simulation,
+    graph: Graph,
     horizontalCellsInput: HTMLInputElement,
     verticalCellsInput: HTMLInputElement,
     infectedCellsInput: HTMLInputElement,
@@ -20,6 +23,7 @@ export class SimulationController {
     this.infectedCellsInput = infectedCellsInput;
     this.cInput = cInput;
     this.view = view;
+    this.graph = graph;
   }
 
   public async start(): Promise<void> {
@@ -30,6 +34,7 @@ export class SimulationController {
 
     this.view.setSize(hCells, vCells);
     this.view.reset();
+    this.graph.reset();
     const simulation = new SIRSimulation(hCells, vCells, c);
 
     for (let i = 0; i < infectedCells; i++) {
@@ -39,6 +44,7 @@ export class SimulationController {
       this.view.infect(x, y);
     }
 
+    let epoch = 0;
     while (true) {
       await new Promise(r => setTimeout(r, 100));
       simulation.epoch();
@@ -53,6 +59,11 @@ export class SimulationController {
             break;
         }
       });
+
+      this.graph.addSusceptiblePoint(new Point(epoch, simulation.susceptibleCellsCount()));
+      this.graph.addInfectedPoint(new Point(epoch, simulation.infectedCellsCount()));
+      this.graph.addRemovedPoint(new Point(epoch, simulation.removedCellsCount()));
+      epoch++;
     }
   }
 }
