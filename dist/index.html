@@ -28,103 +28,23 @@
             <div class="card-body">
               <form>
                 <div class="form-group row">
-                  <div class="input-group input-group-sm">
-                    <div class="input-group-prepend">
-                      <div class="input-group-text">PCCH</div>
-                    </div>
-                    <input type="number" class="form-control" id="PCCH-bits" min="0" max="100" value="8">
-                    <div class="input-group-prepend">
-                      <div class="input-group-text">PBR</div>
-                    </div>
-                    <input type="number" class="form-control" id="PCCH-pbr" min="0" max="100" value="4">
-                  </div>
+                  <label for="input-horizontal-cells">Horizontal Cells Count</label>
+                  <input type="number" min="10" max="100" value="50" id="input-horizontal-cells" class="form-control">
                 </div>
 
                 <div class="form-group row">
-                  <div class="input-group input-group-sm">
-                    <div class="input-group-prepend">
-                      <div class="input-group-text">BCCH</div>
-                    </div>
-                    <input type="number" class="form-control" id="BCCH-bits" min="0" max="100" value="6">
-                    <div class="input-group-prepend">
-                      <div class="input-group-text">PBR</div>
-                    </div>
-                    <input type="number" class="form-control" id="BCCH-pbr" min="0" max="100" value="4">
-                  </div>
+                  <label for="input-vertical-cells">Vertical Cells Count</label>
+                  <input type="number" min="10" max="100" value="50" id="input-vertical-cells" class="form-control">
                 </div>
 
                 <div class="form-group row">
-                  <div class="input-group input-group-sm">
-                    <div class="input-group-prepend">
-                      <div class="input-group-text">CCCH</div>
-                    </div>
-                    <input type="number" class="form-control" id="CCCH-bits" min="0" max="100" value="6">
-                    <div class="input-group-prepend">
-                      <div class="input-group-text">PBR</div>
-                    </div>
-                    <input type="number" class="form-control" id="CCCH-pbr" min="0" max="100" value="3">
-                  </div>
+                  <label for="input-infected-cells">Initially infected cells</label>
+                  <input type="number" min="0" max="50" value="5" id="input-infected-cells" class="form-control">
                 </div>
 
                 <div class="form-group row">
-                  <div class="input-group input-group-sm">
-                    <div class="input-group-prepend">
-                      <div class="input-group-text">DCCH</div>
-                    </div>
-                    <input type="number" class="form-control" id="DCCH-bits" min="0" max="100" value="7">
-                    <div class="input-group-prepend">
-                      <div class="input-group-text">PBR</div>
-                    </div>
-                    <input type="number" class="form-control" id="DCCH-pbr" min="0" max="100" value="2">
-                  </div>
-                </div>
-
-                <div class="form-group row">
-                  <div class="input-group input-group-sm">
-                    <div class="input-group-prepend">
-                      <div class="input-group-text">DTCH</div>
-                    </div>
-                    <input type="number" class="form-control" id="DTCH-bits" min="0" max="100" value="4">
-                    <div class="input-group-prepend">
-                      <div class="input-group-text">PBR</div>
-                    </div>
-                    <input type="number" class="form-control" id="DTCH-pbr" min="0" max="100" value="1">
-                  </div>
-                </div>
-
-                <div class="form-group row">
-                  <div class="input-group input-group-sm">
-                    <div class="input-group-prepend">
-                      <div class="input-group-text">MCCH</div>
-                    </div>
-                    <input type="number" class="form-control" id="MCCH-bits" min="0" max="100" value="4">
-                    <div class="input-group-prepend">
-                      <div class="input-group-text">PBR</div>
-                    </div>
-                    <input type="number" class="form-control" id="MCCH-pbr" min="0" max="100" value="1">
-                  </div>
-                </div>
-
-                <div class="form-group row">
-                  <div class="input-group input-group-sm">
-                    <div class="input-group-prepend">
-                      <div class="input-group-text">MTCH</div>
-                    </div>
-                    <input type="number" class="form-control" id="MTCH-bits" min="0" max="100" value="3">
-                    <div class="input-group-prepend">
-                      <div class="input-group-text">PBR</div>
-                    </div>
-                    <input type="number" class="form-control" id="MTCH-pbr" min="0" max="100" value="2">
-                  </div>
-                </div>
-
-                <div class="form-group row">
-                  <div class="input-group input-group-sm">
-                    <div class="input-group-prepend">
-                      <div class="input-group-text">PDU</div>
-                    </div>
-                    <input type="number" class="form-control" id="PDU" min="0" value="20">
-                  </div>
+                  <label for="input-c">C</label>
+                  <input type="number" min="0.0" max="1.0" step="0.1" value="0.2" id="input-c" class="form-control">
                 </div>
               </form>
             </div>
