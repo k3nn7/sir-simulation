@@ -3,10 +3,13 @@ import Renderable from "./Renderable";
 export default class Renderer {
   ctx: CanvasRenderingContext2D;
   objects: Array<Renderable>;
+  previousFrame: number;
+  fps: number;
 
   public constructor(context: CanvasRenderingContext2D) {
     this.ctx = context;
     this.objects = Array<Renderable>();
+    this.previousFrame = (new Date()).getTime();
   }
 
   public addObject(object: Renderable): number {
@@ -21,6 +24,8 @@ export default class Renderer {
     this.clearScreen();
 
     const now = (new Date()).getTime();
+    this.fps = 1000 / (now - this.previousFrame);
+    this.previousFrame = now;
 
     this.objects.forEach((object: Renderable) => {
       this.ctx.strokeStyle = 'black';
