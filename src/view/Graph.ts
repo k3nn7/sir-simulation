@@ -54,8 +54,16 @@ export class Graph extends RenderableObject {
     ctx.strokeStyle = 'black';
     ctx.moveTo(10, this.height);
     ctx.lineTo(10, 0);
+    ctx.lineTo(6, 10);
+    ctx.lineTo(14, 10);
+    ctx.lineTo(10, 0);
+    ctx.fill();
     ctx.moveTo(0, this.height - 10);
     ctx.lineTo(this.width, this.height - 10);
+    ctx.lineTo(this.width - 10, this.height - 14);
+    ctx.lineTo(this.width - 10, this.height - 6);
+    ctx.lineTo(this.width, this.height - 10);
+    ctx.fill();
     ctx.stroke();
 
     const hStep = (this.width - 10) / this.susceptible.length;
