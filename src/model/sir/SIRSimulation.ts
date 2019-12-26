@@ -9,16 +9,22 @@ export enum State {
 export class Cell {
   public readonly x: number;
   public readonly y: number;
+  private readonly neighbours: Array<Cell>;
   private state: State;
 
   constructor(x: number, y: number, state: State) {
     this.x = x;
     this.y = y;
     this.state = state;
+    this.neighbours = new Array<Cell>();
   }
 
   infect() {
     this.state = State.Infected;
+  }
+
+  remove() {
+    this.state = State.Removed;
   }
 
   isInfected(): boolean {
@@ -32,14 +38,26 @@ export class Cell {
   isRemoved(): boolean {
     return this.state == State.Removed;
   }
+
+  addNeighbour(cell: Cell): void {
+    this.neighbours.push(cell);
+  }
+
+  getRandomNeighbour(): Cell {
+    const index = Math.floor(Math.random() * this.neighbours.length);
+    return this.neighbours[index];
+  }
 }
 
 export class SIRSimulation {
   private readonly width: number;
   private readonly height: number;
   private readonly c: number;
-  private cells: Array<Array<Cell>>;
+  private readonly cells: Array<Array<Cell>>;
   private eventsFromLastEpoch: Array<CellStateChanged>;
+  private susceptibleCells: Set<Cell>;
+  private infectedCells: Set<Cell>;
+  private removedCells: Set<Cell>;
 
   constructor(width: number, height: number, c: number) {
     this.width = width;
@@ -47,50 +65,48 @@ export class SIRSimulation {
     this.c = c;
     this.eventsFromLastEpoch = new Array<CellStateChanged>();
     this.cells = new Array<Array<Cell>>();
+    this.susceptibleCells = new Set<Cell>();
+    this.infectedCells = new Set<Cell>();
+    this.removedCells = new Set<Cell>();
 
-    for (let i = 0; i < width; i++) {
+    this.initializeCells();
+  }
+
+  private initializeCells(): void {
+    for (let i = 0; i < this.width; i++) {
       this.cells[i] = new Array<Cell>();
-      for (let j = 0; j < height; j++) {
-        this.cells[i][j] = new Cell(i, j, State.Susceptible);
+      for (let j = 0; j < this.height; j++) {
+        const cell = new Cell(i, j, State.Susceptible);
+        this.cells[i][j] = cell;
+        this.susceptibleCells.add(cell);
+      }
+    }
+
+    for (let i = 0; i < this.width; i++) {
+      for (let j = 0; j < this.height; j++) {
+        this.getCellNeighbours(i, j).forEach(neighbour => {
+          this.cells[i][j].addNeighbour(neighbour);
+        });
       }
     }
   }
 
   infectCell(x: number, y: number) {
     this.cells[x][y].infect();
+    this.susceptibleCells.delete(this.cells[x][y]);
+    this.infectedCells.add(this.cells[x][y]);
   }
 
   susceptibleCellsCount(): number {
-    let result = 0;
-    for (let i = 0; i < this.width; i++) {
-      for (let j = 0; j < this.height; j++) {
-        if (this.cells[i][j].isSusceptible()) result++;
-      }
-    }
-
-    return result;
+    return this.susceptibleCells.size;
   }
 
   infectedCellsCount(): number {
-    let result = 0;
-    for (let i = 0; i < this.width; i++) {
-      for (let j = 0; j < this.height; j++) {
-        if (this.cells[i][j].isInfected()) result++;
-      }
-    }
-
-    return result;
+    return this.infectedCells.size;
   }
 
   removedCellsCount(): number {
-    let result = 0;
-    for (let i = 0; i < this.width; i++) {
-      for (let j = 0; j < this.height; j++) {
-        if (this.cells[i][j].isRemoved()) result++;
-      }
-    }
-
-    return result;
+    return this.removedCells.size;
   }
 
   lastEvents(): Array<CellStateChanged> {
@@ -99,50 +115,37 @@ export class SIRSimulation {
 
   epoch(): void {
     this.eventsFromLastEpoch = new Array<CellStateChanged>();
+    const newInfectedCells = new Set<Cell>();
 
-    const newState = new Array<Array<Cell>>();
-    for (let i = 0; i < this.width; i++) {
-      newState[i] = new Array<Cell>();
-      for (let j = 0; j < this.height; j++) {
-        newState[i][j] = this.cells[i][j];
-      }
-    }
-
-    for (let i = 0; i < this.width; i++) {
-      for (let j = 0; j < this.height; j++) {
-        if (this.cells[i][j].isInfected()) {
-          const x = Math.random();
-          if (x < this.c) {
-            newState[i][j] = new Cell(i, j, State.Removed);
-            this.lastEvents().push(new CellStateChanged(
-              i,
-              j,
-              State.Infected,
-              State.Removed
-            ));
-          } else {
-            const neighbours = this.getCellNeighbours(i, j);
-            const n = neighbours[Math.floor(Math.random() * neighbours.length)];
-            if (n.isSusceptible() && newState[n.x][n.y].isSusceptible()) {
-              newState[n.x][n.y] = new Cell(
-                n.x,
-                n.y,
-                State.Infected
-              );
-
-              this.lastEvents().push(new CellStateChanged(
-                n.x,
-                n.y,
-                State.Susceptible,
-                State.Infected
-              ));
-            }
-          }
+    this.infectedCells.forEach(cell => {
+      const x = Math.random();
+      if (x < this.c) {
+        cell.remove();
+        this.removedCells.add(cell);
+        this.lastEvents().push(new CellStateChanged(
+          cell.x,
+          cell.y,
+          State.Infected,
+          State.Removed
+        ));
+      } else {
+        newInfectedCells.add(cell);
+        const neighbour = cell.getRandomNeighbour();
+        if (neighbour.isSusceptible()) {
+          neighbour.infect();
+          newInfectedCells.add(neighbour);
+          this.susceptibleCells.delete(neighbour);
+          this.lastEvents().push(new CellStateChanged(
+            neighbour.x,
+            neighbour.y,
+            State.Susceptible,
+            State.Infected
+          ));
         }
       }
-    }
+    });
 
-    this.cells = newState;
+    this.infectedCells = newInfectedCells;
   }
 
   private getCellNeighbours(x: number, y: number): Array<Cell> {
